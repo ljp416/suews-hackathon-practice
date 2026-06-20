@@ -121,9 +121,15 @@ The final rendered URL was checked after commit and push.
 
 ## Step 5 - Commit and Push
 
-Pending at transcript creation time:
+Committed and pushed the setup evidence:
 
-- Stage tracked setup evidence and transcript.
-- Commit.
-- Push to `origin/main`.
-- Verify the rendered Pages URL returns HTTP 200.
+```powershell
+git add docs/index.md analysis/suews_smoke transcripts/2026-06-20-setup-transcript.md
+git commit -m "Add SUEWS hackathon practice smoke run"
+git push origin main
+```
+
+- Commit: `cd412ed`
+- Push: `main -> origin/main`
+- Pages verification: HTTP 200, updated title present, and updated
+  `suews-agent runtime` text present.
