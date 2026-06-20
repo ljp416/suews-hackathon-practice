@@ -1,0 +1,56 @@
+{
+  "run_dir": "analysis\\suews_smoke\\Output",
+  "checks": [
+    {
+      "name": "provenance_present",
+      "severity": "pass",
+      "passed": true,
+      "message": "provenance.json present.",
+      "details": {
+        "path": "analysis\\suews_smoke\\Output\\provenance.json"
+      }
+    },
+    {
+      "name": "output_files_present",
+      "severity": "pass",
+      "passed": true,
+      "message": "Found 1 output file(s).",
+      "details": {
+        "files": [
+          "analysis\\suews_smoke\\Output\\KCL1_2012_SUEWS_60.txt"
+        ]
+      }
+    },
+    {
+      "name": "nan_proportion",
+      "severity": "pass",
+      "passed": true,
+      "message": "NaN fractions within 5% on QH/QE/QN.",
+      "details": {
+        "fractions": {
+          "QH": 0.0,
+          "QE": 0.0,
+          "QN": 0.0
+        }
+      }
+    },
+    {
+      "name": "energy_balance_closure",
+      "severity": "warning",
+      "passed": false,
+      "message": "Mean closure residual 5.731 exceeds 0.10.",
+      "details": {
+        "ratio_mean": 5.731098205778483,
+        "n_rows": 8741
+      }
+    }
+  ],
+  "summary": {
+    "n_pass": 3,
+    "n_warn": 1,
+    "n_fail": 0
+  },
+  "recommendations": [
+    "Review storage_heat / emissions physics options and check land-cover fractions sum to 1.0."
+  ]
+}

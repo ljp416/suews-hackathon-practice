@@ -1,0 +1,39 @@
+{
+  "purpose": "SUEWS Community Hackathon practice smoke test",
+  "status": "completed",
+  "readiness": "Level 1 - demo",
+  "date": "2026-06-20",
+  "repository": "https://github.com/ljp416/suews-hackathon-practice",
+  "repo_commit_before_run": "031c9ce17334da9b1f3d64db20443670a8889fbe",
+  "runtime": {
+    "python": "3.10.9",
+    "suews": "2026.6.5",
+    "supy": "2026.6.5",
+    "suews_mcp": "2026.6.5",
+    "install_source": "git+https://github.com/UMEP-dev/SUEWS.git#subdirectory=mcp",
+    "install_resolved_commit": "a541e4af95f2cf0bba204310065a6b051008d3c0"
+  },
+  "commands": [
+    "python -m venv .venv",
+    ".\\.venv\\Scripts\\python -m pip install --upgrade pip",
+    ".\\.venv\\Scripts\\python -m pip install \"git+https://github.com/UMEP-dev/SUEWS.git#subdirectory=mcp\"",
+    ".\\.venv\\Scripts\\suews init analysis\\suews_smoke --template simple-urban --format json",
+    ".\\.venv\\Scripts\\suews inspect --format json analysis\\suews_smoke\\sample_config.yml",
+    ".\\.venv\\Scripts\\suews validate --dry-run --format json analysis\\suews_smoke\\sample_config.yml",
+    ".\\.venv\\Scripts\\suews run analysis\\suews_smoke\\sample_config.yml",
+    ".\\.venv\\Scripts\\suews diagnose --format json analysis\\suews_smoke\\Output",
+    ".\\.venv\\Scripts\\suews summarise analysis\\suews_smoke\\Output --variables T2,QH,QE,QN,Rain,Evap,RO --format json"
+  ],
+  "input_artifacts": [
+    "analysis/suews_smoke/sample_config.yml",
+    "analysis/suews_smoke/Kc_2012_data_60.txt"
+  ],
+  "output_artifacts": [
+    "analysis/suews_smoke/Output/KCL1_2012_SUEWS_60.txt",
+    "analysis/suews_smoke/Output/KCL_SUEWS_checkpoint.json"
+  ],
+  "diagnostic_caveats": [
+    "The first diagnostic pass warned that provenance.json was missing; this file records the missing sidecar after the run.",
+    "Diagnostics reported mean energy-balance closure residual 5.731, so this is a demo workflow check only."
+  ]
+}
