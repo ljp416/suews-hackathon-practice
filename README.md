@@ -19,8 +19,8 @@ Use the **suews-agent** to produce a heat-hazard layer for the focus city, trans
 
 ## Repository layout
 
-- `data/` — the city dataset (land cover, building form, population, anthropogenic heat, forcing). Loaded at kickoff.
-- `bridge/heat-to-risk.md` — the documented heat-to-risk bridge function. Provided on the day.
+- `data/` — the challenge city, loaded at kickoff from [UMEP-dev/uda-city-hackathon](https://github.com/UMEP-dev/uda-city-hackathon) (land cover, building form, population, present and hotter-future forcing). See [`data/README.md`](data/README.md) for the one-line load step.
+- `bridge/heat-to-risk.md` — points to the reference heat-to-risk bridge shipped with the dataset (`risk_bridge.py` + `risk_bridge.md`).
 - `analysis/` — your suews-agent runs, configuration, and outputs.
 - `transcripts/` — your exported AI session transcripts (judged evidence — save as you go).
 - `docs/` — your public **GitHub Pages** showcase site (judged; must be public).
