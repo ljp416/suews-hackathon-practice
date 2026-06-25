@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="assets/pages.css">
+
 # SUEWS Hackathon UDA-city Practice
 
 This repository uses the released UDA-city dataset and compares the supplied
@@ -6,45 +8,148 @@ alignment problems.
 
 Dataset: [UMEP-dev/uda-city-hackathon](https://github.com/UMEP-dev/uda-city-hackathon)
 
-## Reviewer answer
+<section class="reviewer-summary" aria-labelledby="reviewer-answer-title">
+  <div>
+    <p class="summary-kicker">Reviewer answer</p>
+    <h2 id="reviewer-answer-title">Yes: the corrected UDA-city index is a more faithful first-pass humid-heat comparison for the four tested alignment problems.</h2>
+    <p>The corrected index keeps low exposure nonzero, uses one absolute scale for present and future, brings humidity into the hazard through heat-index hours, and reports social sensitivity without letting one low pillar erase total risk.</p>
+  </div>
+  <aside class="summary-verdict" aria-label="Review boundary">
+    <span>Boundary</span>
+    <strong>Corrected comparison, not a final city risk model.</strong>
+    <p>The results table and four plots support the tested fixes; the ideas list marks the next design pass.</p>
+  </aside>
+</section>
 
-**Core question:** Does the corrected UDA-city index give a more faithful
-first-pass humid-heat risk comparison than the supplied reference bridge?
+<section class="metric-strip" aria-label="Core metrics">
+  <article>
+    <span>Recovered low exposure</span>
+    <strong>0 -> 0.062 / 0.209</strong>
+    <p><code>Jade Gardens</code> changes from reference zero to corrected present / future risk.</p>
+  </article>
+  <article>
+    <span>Humid-heat signal</span>
+    <strong>414 vs 42 hours</strong>
+    <p><code>Kampong Lama</code> present hazard is much larger with heat-index hours than dry-bulb hours.</p>
+  </article>
+  <article>
+    <span>Absolute worsening</span>
+    <strong>0.169 -> 0.569</strong>
+    <p><code>Kampong Lama</code> remains top risk while future corrected risk rises on the same scale.</p>
+  </article>
+</section>
 
-**Short answer:** yes, for the four tested alignment problems. The corrected
-index keeps low exposure nonzero, uses one absolute scale for present and
-future, brings humidity into the hazard through heat-index hours, and reports
-social sensitivity without letting one low pillar erase total risk.
+<nav class="evidence-path" aria-label="Evidence path">
+  <span>Evidence path</span>
+  <a href="#four-tested-fixes">Fixes</a>
+  <a href="#corrected-index">Formula</a>
+  <a href="#new-result">Results</a>
+  <a href="#comparison-plots">Figures 1-4</a>
+  <a href="#ideas-not-fixed-yet">Boundary</a>
+</nav>
 
-Read the page as a corrected comparison, not as a final city risk model. The
-results table and four plots show the evidence-supported change; the remaining
-exposure and vulnerability ideas at the end mark the boundary for the next
-design pass.
+## Four tested fixes
 
-## At-a-glance evidence
+The supplied bridge is useful as a teaching baseline, but this page audits four
+specific alignment problems. Each card maps one problem to its correction,
+figure, and local key number. The boundary is unchanged: this is an index audit,
+not a final operational city-risk model.
 
-| Claim | Best evidence on this page | Boundary |
-| --- | --- | --- |
-| The corrected index gives a more faithful first-pass humid-heat risk comparison for the four tested alignment problems. | Result table plus Figure 1: suppressed neighbourhoods reappear and corrected absolute risk can be compared across present and future. | This is an index audit, not a final operational city-risk model. |
-| Humidity changes the hazard signal enough to matter. | Figure 2: heat-index hours are much larger than dry-bulb threshold hours; `Kampong Lama` has `414` humid-heat hours versus `42` dry-bulb hours present. | The heat-index threshold is fixed here; no threshold-sensitivity test is claimed. |
-| Absolute scaling exposes future worsening hidden by separate min-max scores. | Result table plus Figure 3: corrected future risk increases for all neighbourhoods, including `Kampong Lama` at `0.169 -> 0.569`. | Future scenario changes climate only, not social conditions. |
-| Low-exposure places should stay visible instead of becoming zero-risk by construction. | Figure 4 and the headline result: `Jade Gardens` changes from reference risk `0` to corrected risk `0.062` present and `0.209` future. | Exposure is daytime population only. |
-
-## Why the reference index is misaligned
-
-The supplied bridge is useful because it shows that hazard and risk can disagree,
-but its default scaling creates artifacts:
-
-- The lowest daytime population, 80 people/ha, becomes exposure `0`.
-- The geometric mean then turns any zero pillar into total risk `0`.
-- Present and future are min-max scaled separately, so a score of `1.0` in both
-  scenarios does not mean unchanged absolute risk.
-- The hazard is dry-bulb `T2 > 35 C`, even though UDA-city is hot-humid with mean
-  RH near 83%.
+<section class="fix-ladder" aria-label="Four tested fixes">
+  <article class="fix-card">
+    <span>Fix 1</span>
+    <h3>Zero-kill social sensitivity</h3>
+    <dl>
+      <div>
+        <dt>Problem</dt>
+        <dd>The geometric mean turns any zero social pillar into total risk <code>0</code>.</dd>
+      </div>
+      <div>
+        <dt>Correction</dt>
+        <dd><code>social sensitivity = mean(exposure, vulnerability)</code> avoids zero-killing the index.</dd>
+      </div>
+      <div>
+        <dt>Figure</dt>
+        <dd><a href="#figure-1">Figure 1</a></dd>
+      </div>
+      <div>
+        <dt>Key number</dt>
+        <dd><code>Jade Gardens</code>: reference risk index <code>0</code> -> corrected risk index <code>0.062</code> present / <code>0.209</code> future.</dd>
+      </div>
+    </dl>
+  </article>
+  <article class="fix-card">
+    <span>Fix 2</span>
+    <h3>Humid heat enters the hazard</h3>
+    <dl>
+      <div>
+        <dt>Problem</dt>
+        <dd>Dry-bulb <code>T2 &gt; 35 C</code> misses the hot-humid burden.</dd>
+      </div>
+      <div>
+        <dt>Correction</dt>
+        <dd>Humid hazard uses <code>hours(heat index &gt; 41 C) / analysis hours</code>.</dd>
+      </div>
+      <div>
+        <dt>Figure</dt>
+        <dd><a href="#figure-2">Figure 2</a></dd>
+      </div>
+      <div>
+        <dt>Key number</dt>
+        <dd><code>Kampong Lama</code> present hazard: <code>42</code> dry-bulb hours vs <code>414</code> heat-index hours.</dd>
+      </div>
+    </dl>
+  </article>
+  <article class="fix-card">
+    <span>Fix 3</span>
+    <h3>Present and future share one scale</h3>
+    <dl>
+      <div>
+        <dt>Problem</dt>
+        <dd>Scenario-local min-max scaling makes equal scores hard to compare across present and future.</dd>
+      </div>
+      <div>
+        <dt>Correction</dt>
+        <dd>Present and future use one absolute corrected-risk scale.</dd>
+      </div>
+      <div>
+        <dt>Figure</dt>
+        <dd><a href="#figure-3">Figure 3</a></dd>
+      </div>
+      <div>
+        <dt>Key number</dt>
+        <dd><code>Kampong Lama</code> corrected risk index: <code>0.169</code> present -> <code>0.569</code> future.</dd>
+      </div>
+    </dl>
+  </article>
+  <article class="fix-card">
+    <span>Fix 4</span>
+    <h3>Low exposure stays nonzero</h3>
+    <dl>
+      <div>
+        <dt>Problem</dt>
+        <dd>The lowest daytime population group is scaled to reference exposure <code>0</code>.</dd>
+      </div>
+      <div>
+        <dt>Correction</dt>
+        <dd><code>exposure = population_day / max(population_day)</code> keeps low exposure visible.</dd>
+      </div>
+      <div>
+        <dt>Figure</dt>
+        <dd><a href="#figure-4">Figure 4</a></dd>
+      </div>
+      <div>
+        <dt>Key number</dt>
+        <dd>Low-exposure refuges: reference exposure <code>0</code> -> corrected exposure <code>0.267</code> (<code>80 / 300</code> daytime population).</dd>
+      </div>
+    </dl>
+  </article>
+</section>
 
 ## Corrected index
 
-This page uses a deliberately simple corrected index:
+This page uses a deliberately simple corrected index. It supports the four
+tested fixes above without pretending to be the final answer:
 
 ```text
 humid hazard = hours(heat index > 41 C) / analysis hours
@@ -53,20 +158,6 @@ vulnerability = raw mean of the five supplied vulnerability proxies
 social sensitivity = mean(exposure, vulnerability)
 corrected risk = humid hazard * social sensitivity
 ```
-
-This fixes the four main issues without pretending to be the final answer:
-
-- low exposure remains low, not zero;
-- one low social pillar does not erase all risk;
-- present and future scores share the same absolute scale;
-- humidity enters the hazard through heat-index hours.
-
-| Alignment problem in reference bridge | Correction used here | Evidence artifact |
-| --- | --- | --- |
-| Geometric mean turns any zero pillar into total risk `0`. | `social sensitivity = mean(exposure, vulnerability)` avoids zero-killing the index. | Figure 1 and result table |
-| Dry-bulb `T2 > 35 C` misses humid heat. | Humid hazard uses `hours(heat index > 41 C) / analysis hours`. | Figure 2 |
-| Present and future are min-max scaled separately. | Present and future use one absolute corrected-risk scale. | Figure 3 |
-| Lowest daytime population is scaled to exposure `0`. | `exposure = population_day / max(population_day)` keeps low exposure nonzero. | Figure 4 |
 
 ## New result
 
@@ -83,41 +174,62 @@ This fixes the four main issues without pretending to be the final answer:
 | 9 | Jade Gardens | refuge | 413 | 1392 | 979 | 0.062 | 0.209 |
 | 10 | Serendib Rise | refuge | 377 | 1347 | 970 | 0.055 | 0.195 |
 
-The headline changes are:
-
-- `Jade Gardens` no longer disappears. Its reference risk was `0`; corrected
-  risk is `0.062` present and `0.209` future.
-- `Kampong Lama` remains the top risk neighbourhood, but corrected risk now
-  shows absolute worsening: `0.169 -> 0.569`.
-- Humid-heat hours are much larger than dry-bulb hours. For `Kampong Lama`,
-  present hazard is `42` dry-bulb hours but `414` humid-heat hours.
+The table keeps the full ranked output. The key numbers are repeated beside
+Figures 1-4 so each plot can be read without backtracking.
 
 ## Comparison plots
 
 ### How to read these plots
 
-Use the figure numbers to connect each plot back to the correction table above.
+Use the figure numbers to connect each plot back to the four tested fixes above.
 
-![Old relative risk compared with corrected absolute humid-heat risk](assets/uda_indices/old_vs_corrected_risk.png)
+<div class="figure-callout" id="figure-1">
+  <figure>
+    <img src="assets/uda_indices/old_vs_corrected_risk.png" alt="Old relative risk compared with corrected absolute humid-heat risk">
+    <figcaption><strong>Figure 1. Risk comparison.</strong> Corrected absolute humid-heat risk keeps neighbourhoods visible when the reference bridge suppresses them.</figcaption>
+  </figure>
+  <aside class="key-number" aria-label="Figure 1 key number">
+    <span>Key number</span>
+    <strong>Jade Gardens: reference risk index 0 -> corrected risk index 0.062 present / 0.209 future</strong>
+    <p>Role: shows that low exposure stays low, but no longer becomes zero-risk by construction.</p>
+  </aside>
+</div>
 
-*Figure 1. Risk comparison: corrected absolute humid-heat risk keeps
-neighbourhoods visible when the reference bridge suppresses them.*
+<div class="figure-callout" id="figure-2">
+  <figure>
+    <img src="assets/uda_indices/dry_vs_humid_heat_hours.png" alt="Dry-bulb hazard compared with humid-heat hazard">
+    <figcaption><strong>Figure 2. Humid-vs-dry hazard.</strong> Heat-index hours expose the hot-humid burden that dry-bulb threshold hours undercount.</figcaption>
+  </figure>
+  <aside class="key-number" aria-label="Figure 2 key number">
+    <span>Key number</span>
+    <strong>Kampong Lama present hazard: 42 dry-bulb hours vs 414 heat-index hours</strong>
+    <p>Role: repeats the hazard unit directly beside the plot where the dry and humid thresholds diverge.</p>
+  </aside>
+</div>
 
-![Dry-bulb hazard compared with humid-heat hazard](assets/uda_indices/dry_vs_humid_heat_hours.png)
+<div class="figure-callout" id="figure-3">
+  <figure>
+    <img src="assets/uda_indices/scenario_delta_old_vs_corrected.png" alt="Future-minus-present risk change under old and corrected indices">
+    <figcaption><strong>Figure 3. Hidden absolute worsening.</strong> Points at <code>x = 0</code> with positive <code>y</code> mean the old bridge shows no relative change, while the corrected absolute index shows future risk increasing.</figcaption>
+  </figure>
+  <aside class="key-number" aria-label="Figure 3 key number">
+    <span>Key number</span>
+    <strong>Kampong Lama corrected risk index: 0.169 present -> 0.569 future</strong>
+    <p>Role: keeps the absolute-scale worsening visible without requiring a return to the results table.</p>
+  </aside>
+</div>
 
-*Figure 2. Humid-vs-dry hazard: heat-index hours expose the hot-humid burden
-that dry-bulb threshold hours undercount.*
-
-![Future-minus-present risk change under old and corrected indices](assets/uda_indices/scenario_delta_old_vs_corrected.png)
-
-*Figure 3. Hidden absolute worsening: points at `x = 0` with positive `y` mean
-the old bridge shows no relative change, while the corrected absolute index
-shows future risk increasing.*
-
-![Reference exposure scaling compared with corrected population divided by maximum](assets/uda_indices/exposure_floor_effect.png)
-
-*Figure 4. Exposure floor effect: population divided by the maximum keeps low
-exposure low but nonzero.*
+<div class="figure-callout" id="figure-4">
+  <figure>
+    <img src="assets/uda_indices/exposure_floor_effect.png" alt="Reference exposure scaling compared with corrected population divided by maximum">
+    <figcaption><strong>Figure 4. Exposure floor effect.</strong> Population divided by the maximum keeps low exposure low but nonzero.</figcaption>
+  </figure>
+  <aside class="key-number" aria-label="Figure 4 key number">
+    <span>Key number</span>
+    <strong>Low-exposure refuges: reference exposure 0 -> corrected exposure 0.267 (80 / 300 daytime population)</strong>
+    <p>Role: keeps <code>Jade Gardens</code>, <code>Taman Melati</code>, and <code>Serendib Rise</code> visible instead of forcing the lowest exposure group to zero.</p>
+  </aside>
+</div>
 
 ## Reproducibility
 
