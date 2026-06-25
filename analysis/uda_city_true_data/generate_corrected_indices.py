@@ -223,6 +223,70 @@ def save_barh(ax, labels: list[str], values: list[float], title: str, color: str
     ax.grid(axis="x", alpha=0.25)
 
 
+def plot_scenario_delta(wide: pd.DataFrame) -> None:
+    """Plot scenario deltas with deterministic label offsets for readability."""
+    PLOT_ROOT.mkdir(parents=True, exist_ok=True)
+    label_offsets = {
+        "Kampong Lama": (14, 4),
+        "Dhobi Lines": (12, 4),
+        "Fuzhou Lanes": (12, 0),
+        "Mlima Moto": (-14, 4),
+        "Lusitano Square": (14, 8),
+        "Victoria Exchange": (14, -10),
+        "Zheng He Towers": (14, 4),
+        "Taman Melati": (16, 14),
+        "Jade Gardens": (16, 0),
+        "Serendib Rise": (16, -14),
+    }
+
+    fig, ax = plt.subplots(figsize=(10, 6.5))
+    for _, row in wide.iterrows():
+        x = row["delta_old_risk_index"]
+        y = row["delta_corrected_risk_index"]
+        ax.scatter(x, y, s=65, zorder=3)
+        dx, dy = label_offsets.get(row["name"], (10, 4))
+        ax.annotate(
+            row["name"],
+            xy=(x, y),
+            xytext=(dx, dy),
+            textcoords="offset points",
+            fontsize=8,
+            ha="left" if dx >= 0 else "right",
+            va="center",
+            bbox={
+                "boxstyle": "round,pad=0.15",
+                "facecolor": "white",
+                "edgecolor": "none",
+                "alpha": 0.78,
+            },
+            arrowprops={
+                "arrowstyle": "-",
+                "color": "0.45",
+                "linewidth": 0.6,
+                "shrinkA": 0,
+                "shrinkB": 4,
+            },
+            zorder=4,
+        )
+    ax.axvline(0, color="black", linewidth=0.8, alpha=0.4)
+    ax.axhline(0, color="black", linewidth=0.8, alpha=0.4)
+    ax.set_xlim(
+        wide["delta_old_risk_index"].min() - 0.018,
+        wide["delta_old_risk_index"].max() + 0.025,
+    )
+    ax.set_ylim(
+        wide["delta_corrected_risk_index"].min() - 0.025,
+        wide["delta_corrected_risk_index"].max() + 0.025,
+    )
+    ax.set_xlabel("Old relative risk delta (future - present)")
+    ax.set_ylabel("Corrected absolute risk delta (future - present)")
+    ax.set_title("Separate min-max scaling hides absolute worsening")
+    ax.grid(alpha=0.25)
+    fig.tight_layout()
+    fig.savefig(PLOT_ROOT / "scenario_delta_old_vs_corrected.png", dpi=180)
+    plt.close(fig)
+
+
 def plot_outputs(long_df: pd.DataFrame, wide: pd.DataFrame) -> None:
     PLOT_ROOT.mkdir(parents=True, exist_ok=True)
     ordered = wide.sort_values("corrected_risk_rank_future")["name"].tolist()
@@ -266,24 +330,7 @@ def plot_outputs(long_df: pd.DataFrame, wide: pd.DataFrame) -> None:
     fig.savefig(PLOT_ROOT / "dry_vs_humid_heat_hours.png", dpi=180)
     plt.close(fig)
 
-    fig, ax = plt.subplots(figsize=(9, 6))
-    for _, row in wide.iterrows():
-        ax.scatter(row["delta_old_risk_index"], row["delta_corrected_risk_index"], s=65)
-        ax.text(
-            row["delta_old_risk_index"] + 0.006,
-            row["delta_corrected_risk_index"] + 0.0008,
-            row["name"],
-            fontsize=8,
-        )
-    ax.axvline(0, color="black", linewidth=0.8, alpha=0.4)
-    ax.axhline(0, color="black", linewidth=0.8, alpha=0.4)
-    ax.set_xlabel("Old relative risk delta (future - present)")
-    ax.set_ylabel("Corrected absolute risk delta (future - present)")
-    ax.set_title("Separate min-max scaling hides absolute worsening")
-    ax.grid(alpha=0.25)
-    fig.tight_layout()
-    fig.savefig(PLOT_ROOT / "scenario_delta_old_vs_corrected.png", dpi=180)
-    plt.close(fig)
+    plot_scenario_delta(wide)
 
     exposure = long_df[long_df["scenario"] == "present"][
         ["name", "population_day", "exposure_absolute"]
